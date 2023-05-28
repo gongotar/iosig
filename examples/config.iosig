@@ -1,0 +1,152 @@
+
+blockdevice "/dev/pmem0" {
+    type                = "disk"
+    physical_sector     = "4096 B"
+    logical_sector      = "4096 B"
+    capacity            = "16G"
+    label               = ""
+    model               = ""
+    major:minor         = "259:0"
+    is_volatile         = "false"
+}
+
+blockdevice "/dev/pmem1" {
+    type                = "disk"
+    physical_sector     = "4096 B"
+    logical_sector      = "4096 B"
+    capacity            = "16G"
+    label               = ""
+    model               = ""
+    major:minor         = "259:1"
+    is_volatile         = "false"
+}
+
+blockdevice "/dev/sda" {
+    type                = "disk"
+    physical_sector     = "4096 B"
+    logical_sector      = "4096 B"
+    capacity            = "1.8T"
+    label               = ""
+    model               = "ST2000LM015-2E81"
+    major:minor         = "8:0"
+    is_volatile         = "false"
+}
+
+blockdevice "/dev/sdb" {
+    type                = "disk"
+    physical_sector     = "512 B"
+    logical_sector      = "512 B"
+    capacity            = "223G"
+    label               = ""
+    model               = "PERC H730P Mini"
+    major:minor         = "8:16"
+    is_volatile         = "false"
+}
+
+blockdevice "/dev/sda5" {
+    type                = "part"
+    physical_sector     = "4096 B"
+    logical_sector      = "4096 B"
+    capacity            = "1.8T"
+    label               = "DellUtility"
+    model               = ""
+    major:minor         = "8:17"
+    owner               = "/dev/sda"
+}
+
+blockdevice "/dev/sdb5" {
+    type                = "part"
+    physical_sector     = "512 B"
+    logical_sector      = "512 B"
+    capacity            = "219.9G"
+    label               = ""
+    model               = ""
+    major:minor         = "8:21"
+    owner               = "/dev/sdb"
+}
+
+blockdevice "/dev/mapper/centos_nvram2-home" {
+    type                = "lvm"
+    physical_sector     = "512 B"
+    logical_sector      = "512 B"
+    capacity            = "165.9G"
+    label               = ""
+    model               = ""
+    major:minor         = "253:2"
+    parents             = ["/dev/sdb5"]
+}
+
+blockdevice "/dev/mapper/centos_nvram2-root" {
+    type                = "lvm"
+    physical_sector     = "512 B"
+    logical_sector      = "512 B"
+    capacity            = "50G"
+    label               = ""
+    model               = ""
+    major:minor         = "253:0"
+    parents             = ["/dev/sdb5"]
+}
+
+blockdevice "130.73.144.213:/home" {
+    type                = "remote"
+    capacity            = "165.9G"
+    server              = "130.73.144.213"
+    path_on_server      = "/home"
+}
+
+filesystem "xfs" {
+    blocksize           = "4 KB"
+    segment_size        = "512 b"
+    segment_error_fix   = "4 b"
+}
+
+mountpoint "/local" {
+    global              = "false"
+    filesystem          = "xfs"
+    blockdevice         = "/dev/mapper/centos_nvram2-home"
+    prefix              = "bzcghola"
+}
+
+mountpoint "/home" {
+    global              = "true"
+    filesystem          = "nfs4"
+    blockdevice         = "130.73.144.213:/home"
+    prefix              = "csr/bzcghola"
+}
+
+mountpoint "/mnt/pmem0" {
+    global              = "false"
+    filesystem          = "xfs"
+    blockdevice         = "/dev/pmem0"
+    prefix              = "bzcghola"
+}
+
+mountpoint "/mnt/pmem1" {
+    global              = "false"
+    filesystem          = "xfs"
+    blockdevice         = "/dev/pmem1"
+    prefix              = "bzcghola"
+}
+
+mountpoint "/local2" {
+    global              = "false"
+    filesystem          = "xfs"
+    blockdevice         = "/dev/sda1"
+    prefix              = "bzcghola"
+}
+
+mountpoint "/" {
+    global              = "true"
+    filesystem          = "xfs"
+    blockdevice         = "/dev/mapper/centos_nvram2-root"
+    prefix              = "tmp/bzcghola"
+}
+
+mountpoint "/dassw" {
+    ignore              = "true"
+}
+
+mountpoint "/perm" {
+    ignore              = "true"
+}
+
